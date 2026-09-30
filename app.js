@@ -38,20 +38,24 @@ function card(a) {
 }
 
 function home() {
-  return '<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">Nepal engineering & technology</div><h1>Engineering knowledge that actually helps.</h1><p>Practical career guidance, NEC License preparation, government-exam resources, Linux, DevOps and real-world IT lessons for Nepal.</p><div class="actions"><a class="btn btn-primary" href="#/blog">Explore articles</a><a class="btn btn-secondary" href="#/nec-license">NEC License</a></div></div><div class="hero-card"><div class="big">'+articles.length+'+</div><p>Guides across Loksewa, NEC License, IT careers, Linux, DevOps and engineering education.</p><hr><p>Built with a fast, responsive interface for students and engineers.</p></div></div></section><section class="section"><div class="wrap"><div class="section-head"><h2>Featured guides</h2><a href="#/blog">View all →</a></div><div class="grid">'+articles.slice(0,3).map(card).join("")+'</div></div></section><section class="section"><div class="wrap"><div class="section-head"><h2>Latest articles</h2><a href="#/blog">All articles →</a></div><div class="grid">'+articles.slice(3,9).map(card).join("")+'</div></div></section><section class="section"><div class="wrap newsletter"><div><h2>Get new guides in your inbox</h2><p>Stay updated as new engineering and IT guides are published.</p></div><form id="newsletterForm"><input type="email" required placeholder="you@example.com"><button class="btn btn-primary" type="submit">Subscribe</button></form></div></section>';
+  return '<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">Nepal engineering & technology</div><h1>Engineering knowledge that actually helps.</h1><p>Practical career guidance, NEC License preparation, government-exam resources, Linux, DevOps and real-world IT lessons for Nepal.</p><div class="actions"><a class="btn btn-primary" href="#/coming-soon/blog">Explore articles</a><a class="btn btn-secondary" href="#/nec-license">NEC License</a></div></div><div class="hero-card"><div class="big">'+articles.length+'+</div><p>Guides across Loksewa, NEC License, IT careers, Linux, DevOps and engineering education.</p><hr><p>Built with a fast, responsive interface for students and engineers.</p></div></div></section><section class="section"><div class="wrap"><div class="section-head"><h2>Featured guides</h2><a href="#/coming-soon/blog">View all →</a></div><div class="grid">'+articles.slice(0,3).map(card).join("")+'</div></div></section><section class="section"><div class="wrap"><div class="section-head"><h2>Latest articles</h2><a href="#/coming-soon/blog">All articles →</a></div><div class="grid">'+articles.slice(3,9).map(card).join("")+'</div></div></section><section class="section"><div class="wrap newsletter"><div><h2>Get new guides in your inbox</h2><p>Stay updated as new engineering and IT guides are published.</p></div><form id="newsletterForm"><input type="email" required placeholder="you@example.com"><button class="btn btn-primary" type="submit">Subscribe</button></form></div></section>';
 }
 
 function blog(filter) {
   const active = filter || "All Topics";
   const list = active === "All Topics" ? articles : articles.filter(a => a.cat === active);
   const filters = ["All Topics","Loksewa & Govt Exams","NEC License","IT Careers","IT Education","Linux","DevOps"];
-  return '<section class="page-title"><div class="wrap"><div class="eyebrow">Knowledge base</div><h1>Latest from NepaliEngineer</h1><p>Practical articles for students, engineers, freshers and IT professionals in Nepal.</p></div></section><section class="section section-tight"><div class="wrap"><div class="filters">'+filters.map(x => '<a class="filter '+(x===active?'active':'')+'" href="#/category/'+encodeURIComponent(x)+'">'+x+'</a>').join("")+'</div><div class="grid">'+(list.length ? list.map(card).join("") : '<div class="empty card"><h3>More NEC License content is coming</h3><p>The NEC License section is ready for the upcoming study guides and question banks.</p></div>')+'</div></div></section>';
+  return '<section class="page-title"><div class="wrap"><div class="eyebrow">Knowledge base</div><h1>Latest from NepaliEngineer</h1><p>Practical articles for students, engineers, freshers and IT professionals in Nepal.</p></div></section><section class="section section-tight"><div class="wrap"><div class="filters">'+filters.map(x => '<a class="filter '+(x===active?'active':'')+'" href="#/coming-soon/'+encodeURIComponent(x)+'">'+x+'</a>').join("")+'</div><div class="grid">'+(list.length ? list.map(card).join("") : '<div class="empty card"><h3>More NEC License content is coming</h3><p>The NEC License section is ready for the upcoming study guides and question banks.</p></div>')+'</div></div></section>';
 }
 
 function article(slug) {
   const a = articles.find(x => x.slug === slug);
   if (!a) return simple("Article not found","<p>The requested article could not be found.</p><p><a class='read-more' href='#/blog'>Back to blog →</a></p>");
   return '<section class="article-wrap"><div class="wrap"><article class="article"><a class="back" href="#/blog">← Back to articles</a><span class="tag">'+esc(a.cat)+'</span><h1>'+esc(a.title)+'</h1><div class="meta">'+esc(a.date)+' · NepaliEngineer</div><p class="lead">'+esc(a.desc)+'</p><hr>'+a.body+'<div class="article-end"><a class="btn btn-primary" href="#/blog">Browse more articles</a></div></article></div></section>';
+}
+
+function comingSoon(label) {
+  return '<section class="article-wrap coming-soon-page"><div class="wrap"><article class="article coming-card"><div class="eyebrow">NepaliEngineer</div><h1>Coming Soon</h1><p class="lead">The <strong>'+esc(label)+'</strong> page is being prepared.</p><p>Please check back later for the full content.</p><div class="article-end"><a class="btn btn-primary" href="#/">Back to Home</a></div></article></div></section>';
 }
 
 function simple(title, body) {
@@ -71,7 +75,8 @@ function render() {
   const raw = (location.hash || "#/").slice(2);
   const parts = raw.split("/");
   const route = decodeURIComponent(parts[0] || "");
-  if (route === "article") app.innerHTML = article(decodeURIComponent(parts[1] || ""));
+  if (route === "coming-soon") app.innerHTML = comingSoon((parts.slice(1).join(" ") || "this page").replace(/\b\w/g, function(m){ return m.toUpperCase(); }));
+  else if (route === "article") app.innerHTML = article(decodeURIComponent(parts[1] || ""));
   else if (route === "blog") app.innerHTML = blog("All Topics");
   else if (route === "category") app.innerHTML = blog(decodeURIComponent(parts.slice(1).join("/")));
   else if (route === "nec-license") app.innerHTML = parts[1] ? necTopic(decodeURIComponent(parts[1])) : nec();
@@ -90,7 +95,7 @@ function bindPageForms() {
   const form = document.getElementById("newsletterForm");
   if (form) form.addEventListener("submit", function(e) {
     e.preventDefault();
-    alert("Thanks! Newsletter integration can be connected when you choose an email provider.");
+    location.hash = "#/coming-soon/newsletter";
   });
 }
 
